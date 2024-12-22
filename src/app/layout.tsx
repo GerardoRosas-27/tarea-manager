@@ -1,6 +1,8 @@
+
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="es">
+    <html lang="es" data-theme="dark">
       <body >
         <header >
           <h1 className="text-xl font-bold">Gestor de Tareas</h1>

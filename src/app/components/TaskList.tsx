@@ -3,10 +3,18 @@ import { useState } from "react";
 import { Task } from "../types/task";
 import TaskItem from "./TaskItem";
 import TaskForm from "./TaskForm";
+import Table from "./Table";
 
 const TaskList: React.FC = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
+
+  const headers = ["id","tarea", "descripcion", "acciones"];
+  const data = tasks.map((task) => ({
+    id: task.id,
+    tarea: task.title,
+    descripcion: task.description,
+  }));
 
   const handleAddTask = (task: Omit<Task, "id">) => {
     if (editingTask) {
@@ -33,18 +41,22 @@ const TaskList: React.FC = () => {
       <h2 className="text-xl font-bold">Gestión de Tareas</h2>
       <TaskForm
         onSubmit={handleAddTask}
-        initialData={editingTask ? { title: editingTask.title, description: editingTask.description } : undefined}
+        initialData={
+          editingTask
+            ? { title: editingTask.title, description: editingTask.description }
+            : undefined
+        }
         onCancel={() => setEditingTask(null)}
       />
-      <div className="space-y-2">
-        {tasks.map((task) => (
-          <TaskItem
-            key={task.id}
-            task={task}
-            onEdit={handleEditTask}
-            onDelete={handleDeleteTask}
-          />
-        ))}
+  
+      <div className="p-4">
+        <h1 className="text-2xl font-bold mb-4">Tabla de Ejemplo</h1>
+        <Table
+          headers={headers}
+          data={data}
+          onEdit={handleEditTask}
+          onDelete={handleDeleteTask}
+        />
       </div>
     </div>
   );
