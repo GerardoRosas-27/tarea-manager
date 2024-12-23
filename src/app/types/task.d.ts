@@ -1,24 +1,29 @@
+
 export interface Task {
     id: number;
     title: string;
     description: string;
 }
 
-export interface TaskItemProps {
-    task: Task;
-    onEdit: (id: number) => void;
-    onDelete: (id: number) => void;
-}
-
 export interface TaskFormProps {
-    onSubmit: (task: Omit<Task, "id">) => void;
-    initialData?: Omit<Task, "id">;
+    onSubmit: (task: Partial<Task> & { title: string; description: string }) => void;
+    initialData?: Partial<Task> & { title: string; description: string }; // Permite datos parciales
     onCancel?: () => void;
 }
+
 
 export interface TaskModalProps {
     isOpen: boolean; // Estado del modal
     onClose: () => void; // Función para cerrar el modal
-    onSubmit: (task: { title: string; description: string }) => void; // Acción al guardar
-    initialData?: { title: string; description: string }; // Datos iniciales (opcional)
+    onSubmit: (task: Partial<Task> & { title: string; description: string }) => void; // Puede ser una tarea nueva o una existente
+    initialData?: Partial<Task> & { title: string; description: string }; // Datos iniciales con ID opcional
+}
+
+export interface AlertProps {
+    message: string;
+    type: "success" | "error" | "info"; // Tipos de alerta
+    onClose?: () => void; // Callback opcional para cerrar la alerta
+    onConfirm?: () => void; // Callback para confirmar la acción
+    onCancel?: () => void; // Callback para cancelar la acción
+    actionType?: "confirm" | "notification"; // Tipo de acción: confirmación o notificación
 }
