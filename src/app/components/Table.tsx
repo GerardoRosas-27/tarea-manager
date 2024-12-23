@@ -13,6 +13,7 @@ export default function Table({ headers, data, onEdit, onDelete }: TableProps) {
 
   // Número total de páginas
   const totalPages = Math.ceil(data.length / itemsPerPage);
+  
 
   return (
     <div className="overflow-x-auto">
@@ -20,7 +21,6 @@ export default function Table({ headers, data, onEdit, onDelete }: TableProps) {
         {/* Encabezado */}
         <thead>
           <tr>
-            <th>#</th>
             {headers.map((header, index) => (
               <th key={index}>{header}</th>
             ))}
@@ -29,7 +29,7 @@ export default function Table({ headers, data, onEdit, onDelete }: TableProps) {
         <tbody>
           {paginatedData.map((row, rowIndex) => (
             <tr key={row.id || rowIndex}>
-              <th>{startIndex + rowIndex + 1}</th>
+              
               {headers.map((header, colIndex) =>
                 colIndex === headers.length - 1 ? null : (
                   <td key={colIndex}>{row[header]}</td>
