@@ -5,3 +5,8 @@ export interface TableProps {
     onDelete: (id: number) => void;
   }
   
+ export interface PaginatorProps {
+    currentPage: number; 
+    totalPages: number;
+    onPageChange: (page: number) => void;
+  }

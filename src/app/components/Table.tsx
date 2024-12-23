@@ -1,25 +1,40 @@
+import { useState } from "react";
+import Paginator from "./Paginator"; // Importa el nuevo componente Paginator
 import { TableProps } from "../types/table";
 
 export default function Table({ headers, data, onEdit, onDelete }: TableProps) {
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5; // Número de filas por página
+
+  // Calcular datos para la página actual
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedData = data.slice(startIndex, endIndex);
+
+  // Número total de páginas
+  const totalPages = Math.ceil(data.length / itemsPerPage);
+
   return (
     <div className="overflow-x-auto">
       <table className="table">
-        {/* Head */}
+        {/* Encabezado */}
         <thead>
           <tr>
-            <th></th>
+            <th>#</th>
             {headers.map((header, index) => (
               <th key={index}>{header}</th>
             ))}
           </tr>
         </thead>
         <tbody>
-          {data.map((row, rowIndex) => (
-            <tr key={rowIndex}>
-              <th>{rowIndex + 1}</th>
-              {headers.slice(0, -1).map((header, colIndex) => (
-                <td key={colIndex}>{row[header]}</td>
-              ))}
+          {paginatedData.map((row, rowIndex) => (
+            <tr key={row.id || rowIndex}>
+              <th>{startIndex + rowIndex + 1}</th>
+              {headers.map((header, colIndex) =>
+                colIndex === headers.length - 1 ? null : (
+                  <td key={colIndex}>{row[header]}</td>
+                )
+              )}
               <td>
                 <button
                   className="btn btn-sm btn-primary mr-2"
@@ -38,6 +53,13 @@ export default function Table({ headers, data, onEdit, onDelete }: TableProps) {
           ))}
         </tbody>
       </table>
+
+      {/* Paginador */}
+      <Paginator
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={setCurrentPage}
+      />
     </div>
   );
 }

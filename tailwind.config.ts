@@ -10,6 +10,7 @@ export default {
   },
   plugins: [require("daisyui")],
   daisyui: {
-    themes: ["dark"], // Establece "dark" como el tema predeterminado
+    themes: ["light", "dark"], // Habilitar temas claros y oscuros
   },
+
 } satisfies Config;
