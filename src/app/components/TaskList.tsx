@@ -3,12 +3,24 @@ import { useEffect } from "react";
 import Table from "./Table";
 import TaskModal from "./TaskModal";
 import { useAlert } from "../contexts/AlertContext";
-import { useTaskContext } from "../contexts/TaskContext";
-import {Task} from "../types/task"
+import { RootState, AppDispatch } from "../store/store";
+import {
+  setTasks,
+  addTask,
+  updateTask,
+  deleteTask,
+  openModal,
+  closeModal,
+  editTask,
+} from "../store/taskSlice";
+import { Task } from "../types/task";
+import { useDispatch, useSelector } from "react-redux";
 
 const TaskList: React.FC = () => {
-  const { state, dispatch } = useTaskContext();
-  const { tasks, modalState, editingTask } = state; 
+  const dispatch = useDispatch<AppDispatch>();
+  const { tasks, modalState, editingTask } = useSelector(
+    (state: RootState) => state.tasks
+  );
   const { showAlert, hideAlert } = useAlert();
 
   const headers = ["id", "tarea", "descripcion", "acciones"];
@@ -27,7 +39,7 @@ const TaskList: React.FC = () => {
         return;
       }
       const data = await response.json();
-      dispatch({ type: "SET_TASKS", payload: data });
+      dispatch(setTasks(data));
     } catch (error) {
       console.error("Error inesperado al cargar las tareas:", error);
       showAlert((error as Error).message || "Error inesperado", "error");
@@ -43,7 +55,6 @@ const TaskList: React.FC = () => {
       await handleCreateTask(task as Omit<Task, "id">);
     }
   };
-  
 
   const handleCreateTask = async (task: Omit<Task, "id">) => {
     try {
@@ -59,9 +70,9 @@ const TaskList: React.FC = () => {
         return;
       }
       const newTask = await response.json();
-      dispatch({ type: "ADD_TASK", payload: newTask });
+      dispatch(addTask(newTask));
       showAlert("Tarea creada correctamente", "success");
-      dispatch({ type: "CLOSE_MODAL" });
+      dispatch(closeModal());
     } catch (error) {
       console.error("Error inesperado al crear la tarea:", error);
       showAlert((error as Error).message || "Error inesperado", "error");
@@ -82,9 +93,9 @@ const TaskList: React.FC = () => {
         return;
       }
       const updatedTask = await response.json();
-      dispatch({ type: "UPDATE_TASK", payload: updatedTask });
+      dispatch(updateTask(updatedTask));
       showAlert("Tarea actualizada correctamente", "success");
-      dispatch({ type: "CLOSE_MODAL" });
+      dispatch(closeModal());
     } catch (error) {
       console.error("Error inesperado al actualizar la tarea:", error);
       showAlert((error as Error).message || "Error inesperado", "error");
@@ -98,14 +109,16 @@ const TaskList: React.FC = () => {
       "confirm",
       async () => {
         try {
-          const response = await fetch(`/api/tasks?id=${id}`, { method: "DELETE" });
+          const response = await fetch(`/api/tasks?id=${id}`, {
+            method: "DELETE",
+          });
           if (!response.ok) {
             const errorData = await response.json();
             console.error("Error al eliminar la tarea:", errorData.error);
             showAlert(errorData.error || "Error desconocido", "error");
             return;
           }
-          dispatch({ type: "DELETE_TASK", payload: id });
+          dispatch(deleteTask(id));
           showAlert("Tarea eliminada correctamente", "success");
         } catch (error) {
           console.error("Error inesperado al eliminar la tarea:", error);
@@ -126,7 +139,7 @@ const TaskList: React.FC = () => {
       {/* Botón para abrir el modal */}
       <button
         className="btn bg-blue-500 text-white"
-        onClick={() => dispatch({ type: "OPEN_MODAL" })}
+        onClick={() => dispatch(openModal())}
       >
         Nueva Tarea
       </button>
@@ -142,10 +155,7 @@ const TaskList: React.FC = () => {
             descripcion: task.description,
           }))}
           onEdit={(id) =>
-            dispatch({
-              type: "EDIT_TASK",
-              payload: tasks.find((task) => task.id === id) || null,
-            })
+            dispatch(editTask(tasks.find((task) => task.id === id) || null))
           }
           onDelete={(id) => handleDeleteTask(id)}
         />
@@ -154,7 +164,7 @@ const TaskList: React.FC = () => {
       {/* Modal */}
       <TaskModal
         isOpen={modalState}
-        onClose={() => dispatch({ type: "CLOSE_MODAL" })}
+        onClose={() => dispatch(closeModal())}
         onSubmit={handleSubmitTask}
         initialData={editingTask ? editingTask : undefined}
       />
