@@ -1,3 +1,4 @@
+"use client";
 import { useState } from "react";
 import Paginator from "./Paginator"; // Importa el nuevo componente Paginator
 import { TableProps } from "../types/table";
